@@ -59,8 +59,7 @@ class HashTable:
         hash = offset
         str_bytes = key.encode()
         for c in str_bytes:
-            hash = hash * prime
-            hash = hash ^ c
+            hash = (hash * prime) ^ c
         return hash
 
     def djb2(self, key):
