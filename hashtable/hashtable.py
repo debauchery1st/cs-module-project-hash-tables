@@ -8,6 +8,13 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+    def __str__(self):
+        r = f"({self.value})"
+        cur = self.next
+        while cur is not None and cur.next is not None:
+            r += f" -> ({cur.next.value})"
+            cur = cur.next
+        return r
     # def __str__(self):
     #     return f"HashTableEntry(   {repr(self.key)} , {repr(self.value)}  )"
 
@@ -27,6 +34,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = max(MIN_CAPACITY, capacity)
         self.table = [None] * self.capacity
+        self.population = 0
 
     def get_num_slots(self):
         """
@@ -46,7 +54,7 @@ class HashTable:
 
         Implement this.
         """
-        return len([item for item in self.table if item is not None]) / self.capacity
+        self.population / self.capacity
 
     def fnv1(self, key):
         """
@@ -89,15 +97,16 @@ class HashTable:
 
         Implement this.
         """
-        entry = HashTableEntry(key, value)
         idx = self.hash_index(key)
         current = self.table[idx]
         if current is None:
-            self.table[idx] = entry
+            self.table[idx] = HashTableEntry(key, value)
+            self.population += 1
             return
         if current.key == key:
             current.value = value
             return
+        entry = HashTableEntry(key, value)
         while current.key != key and current.next is not None:
             previous = current
             # find next available spot
@@ -108,6 +117,7 @@ class HashTable:
             previous.next.next = current.next
         else:
             current.next = entry
+        self.population += 1
 
     def delete(self, key):
         """
@@ -117,7 +127,8 @@ class HashTable:
 
         Implement this.
         """
-        if self.get(key) is not None:
+        result = self.get(key)
+        if result is not None:
             self.put(key, None)
         else:
             print(f'NOT FOUND: {key}')
