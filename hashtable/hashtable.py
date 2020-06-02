@@ -8,8 +8,8 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
-    def __str__(self):
-        return f"HashTableEntry({repr(self.key)}, {repr(self.value)})"
+    # def __str__(self):
+    #     return f"HashTableEntry(   {repr(self.key)} , {repr(self.value)}  )"
 
 
 # Hash table can't have fewer than this many slots
@@ -89,18 +89,25 @@ class HashTable:
 
         Implement this.
         """
+        entry = HashTableEntry(key, value)
         idx = self.hash_index(key)
-        self.table[idx] = HashTableEntry(key, value)
-        # idx = self.hash_index(key)
-        # current = self.table[idx]
-        # entry = HashTableEntry(key, value)
-        # if current is not None:
-        #     while current.next is not None:
-        #         # find the next
-        #         current = current.next
-        #     current.next = entry
-        # else:
-        #     self.table[idx] = entry
+        current = self.table[idx]
+        if current is None:
+            self.table[idx] = entry
+            return
+        if current.key == key:
+            current.value = value
+            return
+        while current.key != key and current.next is not None:
+            previous = current
+            # find next available spot
+            current = current.next
+        if current.key == key:
+            # re-link with new entry
+            previous.next = entry
+            previous.next.next = current.next
+        else:
+            current.next = entry
 
     def delete(self, key):
         """
@@ -113,7 +120,7 @@ class HashTable:
         if self.get(key) is not None:
             self.put(key, None)
         else:
-            print(f"NOT FOUND: {key}")
+            print(f'NOT FOUND: {key}')
 
     def get(self, key):
         """
@@ -126,7 +133,7 @@ class HashTable:
         idx = self.hash_index(key)
         entry = self.table[idx]
         if entry:
-            while entry.next:
+            while entry.next and key != entry.key:
                 entry = entry.next
             return entry.value
         return entry
