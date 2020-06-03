@@ -54,7 +54,7 @@ class HashTable:
 
         Implement this.
         """
-        self.population / self.capacity
+        return self.population / self.capacity
 
     def fnv1(self, key):
         """
@@ -97,6 +97,15 @@ class HashTable:
 
         Implement this.
         """
+        lf = self.get_load_factor()
+        if lf > 0.7:
+            self.resize(self.capacity * 2)
+            print(f"resize capacity from {lf} to {self.get_load_factor()}")
+        elif lf < 0.2:
+            if self.capacity < 16:
+                self.resize(self.capacity // 2)
+                print(
+                    f"resize capacity from {lf} to {self.get_load_factor()}")
         idx = self.hash_index(key)
         current = self.table[idx]
         if current is None:
